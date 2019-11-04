@@ -1,4 +1,4 @@
-var client  = new WebSocket('ws://localhost:8001/api/v1/namespaces/default/services/openprio-websocket-service:8080/proxy/positions')
+var client  = new WebSocket('wss://api.openprio.nl/rt/positions')
 
 protobuf.load("openprio_pt_position_data.proto", function(err, root) {
     if (err) {
