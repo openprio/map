@@ -16,11 +16,28 @@ client.onmessage = async function(event) {
   plotPosition(result);
 };
 
-myIcon = L.icon({
+arrivaIcon = L.icon({
     iconUrl: 'arriva.png',
     iconSize: [20, 25],
     iconAnchor: [10, 10]
 });
+
+uovIcon = L.icon({
+    iconUrl: 'u-ov.png',
+    iconSize: [20, 25],
+    iconAnchor: [10, 10]
+});
+
+unknown = L.icon({
+    iconUrl: 'unknown.png',
+    iconSize: [20, 25],
+    iconAnchor: [10, 10]
+});
+
+var dataOwnerCodeToIcon = {
+    "ARR": arrivaIcon,
+    "QBUZZ": uovIcon,
+};
 
 bus_positions = {};
 function plotPosition(msg) {
@@ -38,7 +55,12 @@ function plotPosition(msg) {
         bus_positions[vehicle_id].options.rotationAngle = msg.position.bearing;
 
     } else {
-        bus_positions[vehicle_id] = L.marker(coordinates, {icon: myIcon, rotationAngle: msg.position.bearing}).addTo(map);
+        markerIcon = dataOwnerCodeToIcon[msg.vehicleDescriptor.dataOwnerCode];
+        if (markerIcon == null) {
+            markerIcon = unknown;
+        }
+
+        bus_positions[vehicle_id] = L.marker(coordinates, {icon: markerIcon, rotationAngle: msg.position.bearing}).addTo(map);
     }
  
    content = '<div>'
