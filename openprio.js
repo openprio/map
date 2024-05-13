@@ -70,13 +70,6 @@ var dataOwnerCodeToIcon = {
     "HTM": htmIcon,
 };
 
-function millisecondsToISO8601(milliseconds) {
-    const date = new Date(milliseconds);
-    const isoString = date.toISOString().slice(0, -1); // Remove 'Z' at the end
-    const millisecondsString = String(milliseconds % 1000).padStart(3, '0'); // Milliseconds with leading zeros
-    return `${isoString}.${millisecondsString}Z`;
-}
-
 var bus_positions = {};
 function plotPosition(msg) {
     var json_msg = msg.toJSON();
@@ -101,8 +94,8 @@ function plotPosition(msg) {
 
         bus_positions[vehicle_id] = L.marker(coordinates, {icon: markerIcon, rotationAngle: msg.position.bearing}).addTo(map);
     }
- 
-    msg.stopButtonStatus
+    var timestamp = new Date(msg.timestamp);
+    var latency = new Date() - timestamp;
    var content = '<div>'
    + '<b>Voertuiginformatie:</b><br>'
    + 'Dataownercode: ' + msg.vehicleDescriptor.dataOwnerCode + '<br>'
@@ -117,9 +110,10 @@ function plotPosition(msg) {
    + 'Halteknopstatus: ' + json_msg.passageStopStatus + ' <br>'
    + 'Satelieten zichtbaar: ' + msg.position.numberOfReceivedSatellites + ' <br>'
    + 'Hdop: ' + msg.position.hdop + ' <br>'
-   + 'Richting (van tram): ' + json_msg.vehicleDescriptor.drivingDirection + ' <br>'
-   + 'Aantal gekoppelde voertuigen (tram): ' + msg.vehicleDescriptor.numberOfVehiclesCoupled  + ' <br>'
-   + 'timestamp: ' + millisecondsToISO8601(msg.timestamp)  + ' <br>'
+   + 'Richting (relevant voor 2-richting voertuigen): ' + json_msg.vehicleDescriptor.drivingDirection + ' <br>'
+   + 'Aantal gekoppelde eenheden.: ' + msg.vehicleDescriptor.numberOfVehiclesCoupled  + ' <br>'
+   + 'timestamp: ' +  timestamp.toISOString()  + ' <br>'
+   + 'latency: ' + latency + 'ms <br>'
    + '</div>';
    bus_positions[vehicle_id].bindPopup(content);
 }
